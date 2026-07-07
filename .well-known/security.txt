@@ -1,0 +1,12 @@
+# security.txt — RFC 9116 準拠
+# セキュリティ脆弱性の報告窓口を明示する標準ファイル
+# ブラウザや研究者が /.well-known/security.txt を参照して連絡先を確認します
+
+# 連絡先 (GitHubのIssueなど公開連絡先を記載)
+# Contact: https://github.com/chogeru/issues
+
+# このファイルの有効期限 (定期的に更新すること)
+Expires: 2027-01-01T00:00:00z
+
+# 優先的に使用する言語
+Preferred-Languages: ja, en

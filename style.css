@@ -1,0 +1,1303 @@
+/* ============================================================
+   KENICHI HAYASHI PORTFOLIO — STYLESHEET
+   ============================================================
+   目次:
+    1. CSS Variables (色・サイズ設定)
+    2. Reset & Base
+    3. Navigation (+ ハンバーガーメニュー)
+    4. Hero
+    5. Buttons (共通)
+    6. Section 共通
+    7. About
+    8. Skills
+    9. Career (Timeline)
+   10. Works (フィルター + カテゴリグループ)
+   11. Platform Badges
+   12. Contact / Links
+   13. Footer
+   14. Animations & Reveal
+   15. Responsive (768px / 480px)
+   16. prefers-reduced-motion
+   ============================================================ */
+
+
+/* ============================================================
+   1. CSS Variables
+   ============================================================ */
+:root {
+    /* --- Colors --- */
+    --color-bg:           #ffffff;
+    --color-bg-secondary: #f5f5f7;
+    --color-dark:         #1d1d1f;
+    --color-text:         #1d1d1f;
+    --color-text-muted:   #6e6e73;
+    --color-accent:       #0071e3;
+    --color-accent-hover: #0077ed;
+    --color-border:       rgba(0, 0, 0, 0.08);
+
+    /* --- Shadows --- */
+    --shadow-card:  0 4px 24px rgba(0, 0, 0, 0.07);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+    /* --- Layout --- */
+    --max-width:   980px;
+    --section-pad: 100px 24px;
+    --radius-card: 20px;
+    --radius-pill: 980px;
+    --nav-height:  52px;
+}
+
+
+/* ============================================================
+   2. Reset & Base
+   ============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* 固定ナビの高さ分スクロール位置をオフセット */
+    scroll-padding-top: var(--nav-height);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+                 "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    /* iOS 横向き時に文字サイズが勝手に拡大されるのを防ぐ */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* タップ時のグレーハイライトを除去 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+/* ── キーボードナビゲーション用フォーカスリング ──────────────
+   :focus-visible はマウスクリック時には表示されず、
+   キーボード操作時にのみ表示される (UX的に正しい挙動)
+   ──────────────────────────────────────────────────────── */
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* 丸いボタンにはアウトラインも丸く */
+.btn:focus-visible,
+.filter-btn:focus-visible,
+.back-to-top:focus-visible {
+    border-radius: var(--radius-pill);
+}
+
+/* カードリンクのフォーカス */
+.social-link:focus-visible {
+    border-radius: 14px;
+}
+
+/* ── スキップリンク (キーボードユーザー向け) ── */
+.skip-link {
+    position: fixed;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    padding: 10px 24px;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0 0 12px 12px;
+    transition: top 0.2s ease;
+    white-space: nowrap;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: none;
+}
+
+/* ── ページトップへ戻るボタン ── */
+.back-to-top {
+    position: fixed;
+    bottom: max(32px, calc(24px + env(safe-area-inset-bottom)));
+    right: max(24px, env(safe-area-inset-right));
+    z-index: 150;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-dark);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+    pointer-events: none;
+}
+
+.back-to-top.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.back-to-top:hover {
+    background: #2d2d2f;
+    transform: translateY(-2px) scale(1);
+}
+
+
+/* ============================================================
+   3. Navigation
+   ============================================================ */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* ノッチ付きiPhone: 左右の安全領域を確保 */
+    padding: 0 max(40px, env(safe-area-inset-right))
+               0 max(40px, env(safe-area-inset-left));
+    height: var(--nav-height);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.3s;
+}
+
+.nav.scrolled {
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.nav__logo {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--color-text);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+/* デスクトップ用リンク */
+.nav__links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+}
+
+.nav__links a {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    letter-spacing: 0.1px;
+    transition: color 0.2s;
+}
+
+.nav__links a:hover {
+    color: var(--color-text);
+}
+
+/* ── ハンバーガーボタン ── */
+.nav__hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.nav__hamburger:hover {
+    background: var(--color-bg-secondary);
+}
+
+.nav__hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center;
+}
+
+/* ハンバーガー → × アニメーション */
+.nav.is-open .nav__hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.nav.is-open .nav__hamburger span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+.nav.is-open .nav__hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── モバイルメニュー展開時 ── */
+.nav.is-open .nav__links {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 8px 0 16px;
+    gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    animation: slideDown 0.25s ease;
+}
+
+.nav.is-open .nav__links li {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nav.is-open .nav__links a {
+    display: block;
+    padding: 15px 24px;
+    font-size: 16px;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ============================================================
+   4. Hero
+   ============================================================ */
+.hero {
+    min-height: 100vh;
+    background: var(--color-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 100px 24px 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%,
+                rgba(0, 113, 227, 0.14) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero__eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+}
+
+.hero__name {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    color: #ffffff;
+    line-height: 1.05;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+}
+
+.hero__name-ja {
+    display: block;
+    font-size: clamp(18px, 3vw, 32px);
+    font-weight: 300;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 8px;
+}
+
+.hero__tagline {
+    font-size: clamp(15px, 2.5vw, 22px);
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.65);
+    max-width: 560px;
+    margin: 28px auto 0;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+}
+
+.hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+}
+
+.hero__scroll {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.2s forwards;
+}
+
+.hero__scroll span {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   5. Buttons (共通)
+   ============================================================ */
+.btn {
+    /* inline-flex でタッチターゲット最小44px (Apple HIG) を確保 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 12px 32px;
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: var(--color-accent);
+    color: #fff;
+}
+
+.btn--primary:hover {
+    background: var(--color-accent-hover);
+    transform: scale(1.02);
+}
+
+.btn--ghost {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+
+/* ============================================================
+   6. Section 共通
+   ============================================================ */
+.section {
+    padding: var(--section-pad);
+}
+
+.section--dark {
+    background: var(--color-dark);
+    color: #fff;
+}
+
+.section--gray {
+    background: var(--color-bg-secondary);
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+}
+
+.section__eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 12px;
+}
+
+.section__title {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    color: var(--color-text);
+    margin-bottom: 20px;
+}
+
+.section--dark .section__title {
+    color: #fff;
+}
+
+.section__sub {
+    font-size: clamp(15px, 2vw, 18px);
+    font-weight: 300;
+    color: var(--color-text-muted);
+    max-width: 560px;
+    line-height: 1.6;
+}
+
+.section--dark .section__sub {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.divider {
+    height: 1px;
+    background: var(--color-border);
+}
+
+/* 共通タグリスト */
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.tag {
+    padding: 4px 12px;
+    background: rgba(0, 113, 227, 0.08);
+    color: var(--color-accent);
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.badge {
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* ============================================================
+   7. About
+   ============================================================ */
+.about__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 80px;
+    align-items: center;
+    margin-top: 60px;
+}
+
+.about__avatar {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    box-shadow: var(--shadow-card);
+    max-width: 300px;
+    /* 写真を使う場合: object-fit: cover; font-size: 0; */
+}
+
+.about__name {
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 16px;
+}
+
+.about__bio p {
+    font-size: 16px;
+    color: var(--color-text-muted);
+    line-height: 1.75;
+    margin-bottom: 16px;
+}
+
+.about__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
+
+.meta-chip__dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+}
+
+
+/* ============================================================
+   8. Skills
+   ============================================================ */
+.skills__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 60px;
+}
+
+.skill-card {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-card);
+    padding: 28px;
+    border: 1px solid var(--color-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skill-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+}
+
+.skill-card__icon {
+    font-size: 32px;
+    margin-bottom: 14px;
+}
+
+.skill-card__title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+
+.skill-card__desc {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   9. Career (Timeline)
+   ============================================================ */
+.timeline {
+    position: relative;
+    margin-top: 60px;
+    padding-left: 32px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.timeline__item {
+    position: relative;
+    margin-bottom: 52px;
+}
+
+.timeline__item::before {
+    content: '';
+    position: absolute;
+    left: -36px;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    border: 2px solid var(--color-dark);
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2);
+}
+
+.timeline__period {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 8px;
+}
+
+.timeline__role {
+    font-size: clamp(18px, 2.5vw, 22px);
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+}
+
+.timeline__company {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 12px;
+}
+
+.timeline__desc {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.7;
+    max-width: 600px;
+}
+
+
+/* ============================================================
+  10. Works — フィルター + カテゴリグループ
+   ============================================================ */
+
+/* ── フィルタータブ ── */
+.works__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 40px;
+}
+
+.filter-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 8px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: #fff;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    /* タッチ操作での誤タップ防止 */
+    touch-action: manipulation;
+}
+
+.filter-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.filter-btn.is-active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+}
+
+/* ── 件数表示 ── */
+.works__count {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-top: 16px;
+    min-height: 1.4em;
+    transition: opacity 0.2s;
+}
+
+/* ── カテゴリグループ ── */
+.works__group {
+    margin-top: 56px;
+}
+
+.works__group-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--color-text);
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.works__group-icon {
+    font-size: 22px;
+}
+
+/* グループが非表示のとき */
+.works__group.is-hidden {
+    display: none;
+}
+
+/* ── 作品グリッド ── */
+.works__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* ── 作品カード ── */
+.work-card {
+    background: #fff;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.25s ease;
+}
+
+.work-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* カードが非表示のとき */
+.work-card.is-hidden {
+    display: none;
+}
+
+/* ── サムネイル ── */
+.work-card__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    /* <img> をサムネイルとして使う場合 */
+    object-fit: cover;
+    object-position: center top;
+}
+
+/* ── サムネイルカラー (新色はここに追加) ── */
+.thumb--blue   { background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); }
+.thumb--purple { background: linear-gradient(135deg, #2d1b69 0%, #6b2fa0 100%); }
+.thumb--red    { background: linear-gradient(135deg, #3a0000 0%, #6b0000 100%); }
+.thumb--orange { background: linear-gradient(135deg, #2a1500 0%, #6b3a00 100%); }
+.thumb--green  { background: linear-gradient(135deg, #0a2a1a 0%, #1a6b4a 100%); }
+.thumb--teal   { background: linear-gradient(135deg, #003a3a 0%, #006b6b 100%); }
+.thumb--indigo { background: linear-gradient(135deg, #1a0a4a 0%, #4a2fa0 100%); }
+.thumb--pink   { background: linear-gradient(135deg, #3a0020 0%, #8b0040 100%); }
+
+/* 画像サムネイルを使う場合:
+   <img src="thumb.jpg" class="work-card__thumb" style="object-fit:cover; font-size:0;"> */
+
+/* ── カードボディ ── */
+.work-card__body {
+    padding: 22px;
+}
+
+.work-card__award {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #f5a623;
+    margin-bottom: 6px;
+}
+
+.work-card__platform {
+    margin-bottom: 6px;
+}
+
+.work-card__title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.work-card__desc {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    margin-bottom: 14px;
+}
+
+.work-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.work-tag {
+    padding: 3px 10px;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+/* YouTube / 外部リンクボタン */
+.work-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 6px 14px;
+    background: #ff0000;
+    color: #fff;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.work-card__link:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.work-card__link svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+
+/* ── メタバース プラットフォーム サブグループ ── */
+.works__subgroup {
+    margin-top: 32px;
+}
+
+/* カードが1枚もない場合は JS で非表示にする */
+.works__subgroup.is-empty {
+    display: none;
+}
+
+.works__subgroup-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.works__subgroup-header .platform-badge {
+    font-size: 12px;
+    padding: 4px 12px;
+}
+
+
+/* ============================================================
+  11. Platform Badges (メタバース用)
+   ============================================================ */
+.platform-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* プラットフォームごとのカラー (新プラットフォームはここに追加) */
+.platform-badge--roblox  { background: #e31a23; color: #fff; }
+.platform-badge--vrchat  { background: #1565C0; color: #fff; }
+.platform-badge--cluster { background: #7c4dff; color: #fff; }
+.platform-badge--custom  { background: var(--color-accent); color: #fff; }
+
+
+/* ============================================================
+  12. Contact / Links
+   ============================================================ */
+.links-section {
+    padding: 80px 24px;
+    background: var(--color-bg);
+}
+
+.links-section .container {
+    text-align: center;
+}
+
+.links-section .section__sub {
+    margin: 0 auto 48px;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--color-text);
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--color-bg-secondary);
+    transition: all 0.25s ease;
+}
+
+.social-link:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 113, 227, 0.1);
+}
+
+.social-link svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+
+/* ============================================================
+  13. Footer
+   ============================================================ */
+.footer {
+    background: var(--color-dark);
+    /* ホームバー付きiPhoneの下部安全領域を確保 */
+    padding: 40px 24px max(40px, calc(24px + env(safe-area-inset-bottom)));
+    text-align: center;
+}
+
+.footer p {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.footer a {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer a:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* ============================================================
+  14. Animations & Reveal
+   ============================================================ */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50%       { opacity: 0.9; }
+}
+
+/* スクロールでフェードイン — JS が .visible を付与 */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* ============================================================
+  15. Responsive
+   ============================================================ */
+
+/* ── タブレット〜スマホ (768px以下) ── */
+@media (max-width: 768px) {
+    :root {
+        --section-pad: 64px 20px;
+    }
+
+    /* ── ナビ ── */
+    .nav {
+        /* safe-area もモバイル幅に合わせて上書き */
+        padding: 0 max(20px, env(safe-area-inset-right))
+                   0 max(20px, env(safe-area-inset-left));
+    }
+
+    .nav__links {
+        display: none; /* JS の is-open で表示 */
+    }
+
+    .nav__hamburger {
+        display: flex;
+    }
+
+    /* モバイルメニューのリンクはタッチターゲットを確保 */
+    .nav.is-open .nav__links a {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* ── Hero ── */
+    .hero {
+        padding: 80px 20px max(72px, calc(48px + env(safe-area-inset-bottom)));
+    }
+
+    .hero__scroll {
+        display: none;
+    }
+
+    /* ── About ── */
+    .about__grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .about__avatar {
+        /* スマホではアスペクト比を正方形に変更 (縦長すぎる問題を解消) */
+        aspect-ratio: 1;
+        max-width: 160px;
+        margin: 0 auto;
+        font-size: 64px;
+        border-radius: 20px;
+    }
+
+    .about__bio p {
+        font-size: 15px;
+    }
+
+    .about__meta {
+        gap: 8px;
+    }
+
+    /* ── Skills ── */
+    .skills__grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 36px;
+    }
+
+    .skill-card {
+        padding: 22px;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+        padding-left: 22px;
+    }
+
+    .timeline__item::before {
+        left: -26px;
+    }
+
+    .timeline__desc {
+        font-size: 14px;
+    }
+
+    /* ── Works: フィルター横スクロール ── */
+    .works__filters {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 4px;
+        /* 右端まで見えるように右マージンを相殺 */
+        margin-right: -20px;
+        padding-right: 20px;
+    }
+
+    .works__filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* グループタイトル */
+    .works__group {
+        margin-top: 40px;
+    }
+
+    .works__group-title {
+        font-size: 17px;
+        padding-bottom: 12px;
+    }
+
+    /* サブグループ (メタバース) */
+    .works__subgroup {
+        margin-top: 20px;
+    }
+
+    .works__subgroup-header {
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+    }
+
+    /* 作品グリッドを1列 */
+    .works__grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    /* ── Contact ── */
+    .social-links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .social-link {
+        width: 100%;
+        max-width: 340px;
+        justify-content: center;
+        min-height: 52px;
+    }
+}
+
+/* ── 小さいスマホ (480px以下) ── */
+@media (max-width: 480px) {
+    :root {
+        --section-pad: 56px 16px;
+    }
+
+    /* ロゴが長い場合に縮小 */
+    .nav__logo {
+        font-size: 15px;
+    }
+
+    /* Heroの文字スペーシングを緩和 */
+    .hero__name {
+        letter-spacing: -1px;
+    }
+
+    .hero__name-ja {
+        letter-spacing: 2px;
+        font-size: clamp(15px, 4vw, 20px);
+    }
+
+    .hero__tagline {
+        font-size: 14px;
+    }
+
+    .hero__cta {
+        gap: 12px;
+        margin-top: 36px;
+    }
+
+    /* Section タイトル */
+    .section__title {
+        letter-spacing: -1px;
+    }
+
+    /* About: さらに小さく */
+    .about__avatar {
+        max-width: 130px;
+        font-size: 52px;
+    }
+
+    .about__name {
+        font-size: 20px;
+    }
+
+    /* Works */
+    .works__group-title {
+        font-size: 16px;
+        gap: 8px;
+    }
+
+    .works__group-icon {
+        font-size: 18px;
+    }
+
+    .work-card__body {
+        padding: 18px;
+    }
+
+    .work-card__title {
+        font-size: 15px;
+    }
+
+    /* Timeline */
+    .timeline__role {
+        font-size: 17px;
+    }
+
+    .timeline__period {
+        font-size: 11px;
+    }
+}
+
+
+/* ============================================================
+  16. prefers-reduced-motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}

@@ -1,0 +1,10 @@
+# robots.txt — Kenichi Hayashi Portfolio
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+
+# 設定ファイル・隠しファイルへのクロールを拒否
+Disallow: /.well-known/
+Disallow: /.htaccess
+Disallow: /_headers

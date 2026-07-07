@@ -1,0 +1,30 @@
+# ============================================================
+# Netlify Security Headers
+# ============================================================
+# このファイルは Netlify でホスティングする場合に有効。
+# Vercel の場合は vercel.json を使用すること。
+# ============================================================
+
+/*
+  # クリックジャッキング防止: このページを iframe で埋め込ませない
+  X-Frame-Options: DENY
+
+  # MIMEタイプスニッフィング防止
+  X-Content-Type-Options: nosniff
+
+  # リファラー情報の制限
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # 不要なブラウザ機能をすべて無効化
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+
+  # Content Security Policy (サーバーヘッダー版: frame-ancestors も有効)
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none'
+
+  # HTTPS を強制 (HSTS): 1年間 HTTPS のみ許可
+  # ※ HTTPS で運用する場合のみ有効にすること
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # 同一オリジンポリシーの強化
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin

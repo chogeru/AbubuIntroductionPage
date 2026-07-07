@@ -1,0 +1,18 @@
+{
+  "name": "Kenichi Hayashi — XR Engineer",
+  "short_name": "Kenichi",
+  "description": "XRエンジニア / ゲームクリエイター 林 建一のポートフォリオ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1d1d1f",
+  "theme_color": "#1d1d1f",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
