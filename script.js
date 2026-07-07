@@ -137,4 +137,94 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+
+    // -------------------------------------------------------
+    // 5. Gallery Modal
+    // -------------------------------------------------------
+    const modal      = document.getElementById('galleryModal');
+    const modalImg   = document.getElementById('modalImg');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc  = document.getElementById('modalDesc');
+    const modalDots  = document.getElementById('modalDots');
+    const modalPrev  = document.getElementById('modalPrev');
+    const modalNext  = document.getElementById('modalNext');
+    const modalClose = document.getElementById('modalClose');
+
+    let gallery = [];
+    let gIndex  = 0;
+
+    function showModalImage() {
+        modalImg.src = gallery[gIndex];
+        modalImg.alt = `${gIndex + 1} / ${gallery.length}`;
+        modalPrev.hidden = gallery.length <= 1;
+        modalNext.hidden = gallery.length <= 1;
+        modalDots.querySelectorAll('.modal__dot').forEach((d, i) =>
+            d.classList.toggle('is-active', i === gIndex));
+    }
+
+    function buildDots() {
+        modalDots.innerHTML = '';
+        if (gallery.length <= 1) return;
+        gallery.forEach((_, i) => {
+            const d = document.createElement('button');
+            d.className = 'modal__dot' + (i === gIndex ? ' is-active' : '');
+            d.setAttribute('aria-label', `${i + 1}枚目`);
+            d.addEventListener('click', () => { gIndex = i; showModalImage(); });
+            modalDots.appendChild(d);
+        });
+    }
+
+    function openModal(images, title, desc) {
+        gallery = images;
+        gIndex  = 0;
+        modalTitle.textContent = title;
+        modalDesc.textContent  = desc.trim();
+        buildDots();
+        showModalImage();
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        modalClose.focus();
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    document.querySelector('.modal__backdrop').addEventListener('click', closeModal);
+
+    modalPrev.addEventListener('click', () => {
+        gIndex = (gIndex - 1 + gallery.length) % gallery.length;
+        showModalImage();
+    });
+
+    modalNext.addEventListener('click', () => {
+        gIndex = (gIndex + 1) % gallery.length;
+        showModalImage();
+    });
+
+    document.addEventListener('keydown', e => {
+        if (modal.hidden) return;
+        if (e.key === 'Escape')     closeModal();
+        if (e.key === 'ArrowLeft')  { gIndex = (gIndex - 1 + gallery.length) % gallery.length; showModalImage(); }
+        if (e.key === 'ArrowRight') { gIndex = (gIndex + 1) % gallery.length; showModalImage(); }
+    });
+
+    document.querySelectorAll('.work-card[data-gallery]').forEach(card => {
+        const thumb  = card.querySelector('img.work-card__thumb');
+        if (!thumb) return;
+        const images = card.dataset.gallery.split(',').map(s => s.trim());
+        const title  = card.querySelector('.work-card__title')?.textContent ?? '';
+        const desc   = card.querySelector('.work-card__desc')?.textContent  ?? '';
+        thumb.addEventListener('click', () => openModal(images, title, desc));
+    });
+
+
+    // -------------------------------------------------------
+    // 6. コピーライト年自動更新
+    // -------------------------------------------------------
+    const yearEl = document.getElementById('copyright-year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
 });
