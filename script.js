@@ -14,10 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const nav        = document.getElementById('nav');
     const hamburger  = document.getElementById('hamburger');
     const navLinks   = document.getElementById('navLinks');
+    const backToTop  = document.getElementById('backToTop');
 
-    // スクロールで .scrolled を付与
+    // スクロールで .scrolled / backToTop の is-visible を一括更新
     window.addEventListener('scroll', () => {
-        nav.classList.toggle('scrolled', window.scrollY > 40);
+        const y = window.scrollY;
+        nav.classList.toggle('scrolled', y > 40);
+        backToTop.classList.toggle('is-visible', y > 500);
     }, { passive: true });
 
     // ハンバーガーの開閉
@@ -127,12 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------
     // 4. ページトップへ戻るボタン
     // -------------------------------------------------------
-    const backToTop = document.getElementById('backToTop');
-
-    window.addEventListener('scroll', () => {
-        backToTop.classList.toggle('is-visible', window.scrollY > 500);
-    }, { passive: true });
-
     backToTop.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
